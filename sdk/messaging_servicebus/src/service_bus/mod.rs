@@ -315,6 +315,7 @@ impl FromStr for BrokerProperties {
 pub struct SendMessageOptions {
     pub content_type: Option<String>,
     pub broker_properties: Option<SettableBrokerProperties>,
+    pub custom_properties: Option<headers::Headers>,
 }
 
 impl headers::AsHeaders for SendMessageOptions {
@@ -332,6 +333,10 @@ impl headers::AsHeaders for SendMessageOptions {
                 BROKER_PROPERTIES,
                 serde_json::to_string(broker_properties).unwrap().into(),
             ));
+        }
+        
+        if let Some(custom_properties) = &self.custom_properties {
+            headers.extend(custom_properties.clone().into_iter());
         }
 
         headers.into_iter()
